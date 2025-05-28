@@ -1,8 +1,9 @@
 import express from "express";
 import "dotenv/config";
-import { router } from "./routes/transaction.route.js";
 import { initDB } from "./config/db.config.js";
 import rateLimiter from "./middleware/rate-limiter.js";
+import { specs, swaggerUi } from "../swagger/swagger.js";
+import { router } from "./routes/transaction.route.js";
 
 const app = express();
 
@@ -13,12 +14,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(rateLimiter);
 app.use(express.json());
 
-app.use(router);
+app.use("/api", router);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 initDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
+      console.log(
+        `Swagger docs available at http://localhost:${PORT}/api-docs`
+      );
     });
   })
   .catch((error) => {
