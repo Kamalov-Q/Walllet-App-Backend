@@ -4,6 +4,7 @@ import { initDB } from "./config/db.config.js";
 import rateLimiter from "./middleware/rate-limiter.js";
 import { specs, swaggerUi } from "../swagger/swagger.js";
 import { router } from "./routes/transaction.route.js";
+import job from "./config/cron.config.js";
 
 const app = express();
 
@@ -13,6 +14,8 @@ const PORT = process?.env?.PORT || 5001;
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimiter);
 app.use(express.json());
+
+if (process.env.NODE_ENV === "production") job.start();
 
 app.use("/api", router);
 
