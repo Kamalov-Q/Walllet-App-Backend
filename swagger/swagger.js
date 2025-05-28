@@ -10,7 +10,13 @@ const options = {
       version: "1.0.0",
       description: "API documentation for managing user transactions",
     },
-    servers: [{ url: "http://localhost:3000" }],
+    servers: [
+      { url: "http://localhost:3000", description: "Local server" },
+      {
+        url: "https://walllet-app-backend.onrender.com/",
+        description: "Production server",
+      },
+    ],
   },
   apis: ["./src/routes/transaction.route.js"], // Path to the API docs
 };
