@@ -5,6 +5,7 @@ import rateLimiter from "./middleware/rate-limiter.js";
 import { specs, swaggerUi } from "../swagger/swagger.js";
 import { router } from "./routes/transaction.route.js";
 import job from "./config/cron.config.js";
+import cors from "cors";
 
 const app = express();
 
@@ -13,6 +14,7 @@ const PORT = process?.env?.PORT || 5001;
 // Middleware to parse JSON requests
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimiter);
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 if (process.env.NODE_ENV === "production") job.start();
