@@ -65,7 +65,7 @@ router.post("/transactions", createTransaction);
 
 /**
  * @swagger
- * /transactions/user/{userId}:
+ * /api/transactions/{userId}:
  *   get:
  *     summary: Get transactions by user ID
  *     tags: [Transactions]
@@ -88,7 +88,7 @@ router.get("/transactions/:userId", getTransactionByUserId);
 
 /**
  * @swagger
- * /transactions/{id}:
+ * /api/transactions/{id}:
  *   delete:
  *     summary: Delete a transaction by ID
  *     tags: [Transactions]
@@ -112,7 +112,7 @@ router.delete("/transactions/:id", deleteTransaction);
 
 /**
  * @swagger
- * /transactions/summary/{userId}:
+ * /api/transactions/summary/{userId}:
  *   get:
  *     summary: Get financial summary for a user
  *     tags: [Transactions]
