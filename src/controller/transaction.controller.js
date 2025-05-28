@@ -106,46 +106,78 @@ export const deleteTransaction = async (req, res) => {
   }
 };
 
-export const updateTransaction = async (req, res) => {
+// export const updateTransaction = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { title, amount, category } = req.body;
+
+//     if (isNaN(parseInt(userId))) {
+//       return res
+//         .status(400)
+//         .json({ message: "Invalid User ID", success: false });
+//     }
+//     if (!id) {
+//       return res
+//         .status(400)
+//         .json({ message: "Transaction ID is required", success: false });
+//     }
+
+//     const transactionExists = await sql`
+//     SELECT * FROM transactions WHERE id = ${id}
+//     `;
+
+//     if (transactionExists.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ message: "Transaction not found", success: false });
+//     }
+
+//     const result = await sql`
+//         UPDATE transactions
+//         SET title = ${title}, amount = ${amount}, category = ${category}
+//         WHERE id = ${id}
+//         RETURNING *
+//         `;
+
+//     res.status(200).json({
+//       message: "Transaction updated successfully",
+//       success: true,
+//       transaction: result[0],
+//     });
+//   } catch (error) {
+//     console.error("Error updating transaction:", error);
+//     res.status(500).json({ message: "Internal Server Error", success: false });
+//   }
+// };
+
+export const getSummary = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { title, amount, category } = req.body;
+    const { userId } = req.params;
 
-    if (isNaN(parseInt(userId))) {
+    if (!userId) {
       return res
         .status(400)
-        .json({ message: "Invalid User ID", success: false });
-    }
-    if (!id) {
-      return res
-        .status(400)
-        .json({ message: "Transaction ID is required", success: false });
+        .json({ message: "User ID is required", success: false });
     }
 
-    const transactionExists = await sql`    
-    SELECT * FROM transactions WHERE id = ${id}
-    `;
+    const balanceSum = await sql`
+    SELECT COALESCE(SUM(amount), 0) as balance FROM transactions WHERE user_id = ${userId}`;
 
-    if (transactionExists.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Transaction not found", success: false });
-    }
+    const incomeSum = await sql`
+    SELECT COALESCE(SUM(amount), 0) as income FROM transactions WHERE user_id = ${userId} AND amount > 0`;
 
-    const result = await sql`
-        UPDATE transactions
-        SET title = ${title}, amount = ${amount}, category = ${category}
-        WHERE id = ${id}
-        RETURNING *
-        `;
+    const expenseSum = await sql`
+    SELECT COALESCE(SUM(amount), 0) as expense FROM transactions WHERE user_id = ${userId} AND amount < 0`;
 
     res.status(200).json({
-      message: "Transaction updated successfully",
+      message: "Summary fetched successfully",
       success: true,
-      transaction: result[0],
+      balance: balanceSum[0].balance,
+      income: incomeSum[0].income,
+      expense: expenseSum[0].expense,
     });
   } catch (error) {
-    console.error("Error updating transaction:", error);
+    console.error(`Error getting summary`, error);
     res.status(500).json({ message: "Internal Server Error", success: false });
   }
-}
+};
